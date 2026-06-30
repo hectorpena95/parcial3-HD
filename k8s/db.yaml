@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tienda-db
+  namespace: tienda
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tienda-db
+  template:
+    metadata:
+      labels:
+        app: tienda-db
+    spec:
+      containers:
+      - name: mysql
+        image: mysql:8.0
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: "root" # Pon aquí la contraseña que use tu backend
+        - name: MYSQL_DATABASE
+          value: "tienda_perritos" # Pon aquí el nombre de la BD que use tu backend
+        ports:
+        - containerPort: 3306
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tienda-db
+  namespace: tienda
+spec:
+  ports:
+  - port: 3306
+    targetPort: 3306
+  selector:
+    app: tienda-db
