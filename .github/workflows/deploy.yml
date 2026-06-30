@@ -26,14 +26,18 @@ jobs:
       uses: aws-actions/amazon-ecr-login@v1
 
     - name: Build, Tag, and Push Frontend to Amazon ECR
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
       run: |
-        docker build -t 215499786000.dkr.ecr.us-east-1.amazonaws.com/tienda-frontend:latest ./frontend
-        docker push 215499786000.dkr.ecr.us-east-1.amazonaws.com/tienda-frontend:latest
+        docker build -t $ECR_REGISTRY/tienda-frontend:latest ./frontend
+        docker push $ECR_REGISTRY/tienda-frontend:latest
 
     - name: Build, Tag, and Push Backend to Amazon ECR
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
       run: |
-        docker build -t 215499786000.dkr.ecr.us-east-1.amazonaws.com/tienda-backend:latest ./backend
-        docker push 215499786000.dkr.ecr.us-east-1.amazonaws.com/tienda-backend:latest
+        docker build -t $ECR_REGISTRY/tienda-backend:latest ./backend
+        docker push $ECR_REGISTRY/tienda-backend:latest
 
     - name: Update Kubeconfig for Amazon EKS
       run: |
@@ -41,6 +45,9 @@ jobs:
 
     - name: Deploy to Kubernetes Cluster (EKS)
       run: |
+        # Crear el namespace 'tienda' por si acaso no existe en el clúster nuevo
+        kubectl create namespace tienda --dry-run=client -o yaml | kubectl apply -f -
+        
         if [ -d "./k8s" ]; then
           kubectl apply -f ./k8s/ -n tienda
         else
