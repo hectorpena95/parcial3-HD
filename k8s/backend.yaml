@@ -18,9 +18,9 @@ spec:
         image: 381492165352.dkr.ecr.us-east-1.amazonaws.com/tienda-perritos-backend:latest
         ports:
         - containerPort: 3001
-        env:                         # <--- Inyección de variables para conectar a MySQL
+        env:                         
         - name: DB_HOST
-          value: "tienda-db"
+          value: "tienda-db.tienda.svc.cluster.local" # <--- CAMBIA ESTA LÍNEA
         - name: DB_USER
           value: "root"
         - name: DB_PASSWORD
